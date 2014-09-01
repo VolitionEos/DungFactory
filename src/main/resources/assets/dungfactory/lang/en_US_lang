@@ -1,0 +1,12 @@
+# Keys
+keys.dungfactory.category=Dung Factory
+keys.dungfactory.dropdung=Drop Dung
+
+# Creative Tab
+itemGroup.dungfactory=Dung Factory
+
+# Items
+item.dungfactory:dungball.name=Dung Ball
+
+# Blocks
+tile.dungfactory:fertiledirt.name=Fertile Dirt

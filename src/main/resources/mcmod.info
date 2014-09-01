@@ -1,0 +1,17 @@
+[
+{
+  "modid": "DungFactory",
+  "name": "Dung Factory",
+  "description": "When nature calls it gets answered. So make good use of it!.",
+  "version": "1.0",
+  "mcversion": "1.7.10",
+  "url": "dungfactory.vrealms.org",
+  "updateUrl": "",
+  "authorList": ["VolitionEos"],
+  "credits": "Pahimar, thenewboston, DireWolf20",
+  "logoFile": "",
+  "screenshots": [],
+  "parent": "",
+  "dependencies": []
+}
+]
