@@ -26,7 +26,7 @@ public class LogHelper
         log(Level.FATAL, object);
     }
 
-    public static void info(Object object)
+    public static void info(String s, Object object)
     {
         log(Level.INFO, object);
     }
@@ -36,4 +36,9 @@ public class LogHelper
     public static void trace(Object object) { log(Level.TRACE, object); }
 
     public static void warn(Object object) { log(Level.WARN, object); }
+
+    public static void info(String s)
+    {
+        log(Level.INFO, s);
+    }
 }

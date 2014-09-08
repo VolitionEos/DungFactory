@@ -7,6 +7,8 @@ itemGroup.dungfactory=Dung Factory
 
 # Items
 item.dungfactory:dungball.name=Dung Ball
+item.dungfactory:rake.name=Rake
 
 # Blocks
 tile.dungfactory:fertiledirt.name=Fertile Dirt
+tile.dungfactory:fertileland.name=Fertile Land

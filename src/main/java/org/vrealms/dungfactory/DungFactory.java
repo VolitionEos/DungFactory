@@ -15,6 +15,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import org.vrealms.dungfactory.client.handler.KeyInputEventHandler;
 import org.vrealms.dungfactory.handler.ConfigurationHandler;
 import org.vrealms.dungfactory.handler.EntityEventHandler;
+import org.vrealms.dungfactory.handler.ItemEventHandler;
 import org.vrealms.dungfactory.init.ModBlocks;
 import org.vrealms.dungfactory.init.ModItems;
 import org.vrealms.dungfactory.init.Recipes;
@@ -38,6 +39,7 @@ public class DungFactory
         FMLCommonHandler.instance().bus().register(new ConfigurationHandler());
         MinecraftForge.EVENT_BUS.register(new EntityEventHandler());
         FMLCommonHandler.instance().bus().register(new EntityEventHandler());
+        //FMLCommonHandler.instance().bus().register(new ItemEventHandler());
 
         //proxy.registerKeyBindings();
         ModItems.init();

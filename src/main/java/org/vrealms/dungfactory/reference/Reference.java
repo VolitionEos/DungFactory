@@ -9,6 +9,5 @@ public final class Reference
     public static final String SERVER_PROXY_CLASS = "org.vrealms.dungfactory.proxy.ServerProxy";
     public static final String GUI_FACTORY_CLASS = "org.vrealms.dungfactory.client.gui.GuiFactory";
     public static final String NEXT_DUNGBALL = "org.vrealms.dungfactory.TimeUntilNextDumgBall";
-    public static final String EXTEND_COW = "org.vrealms.dungfactory.ExtendedCow";
     public static final String EXTEND_ANIMAL = "org.vrealms.dungfactory.ExtendedAnimal";
 }

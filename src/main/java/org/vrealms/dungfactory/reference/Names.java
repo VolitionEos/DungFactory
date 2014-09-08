@@ -7,5 +7,6 @@ public final class Names
     {
         public static final String CATEGORY = "keys.dungfactory.category";
         public static final String DROPDUNG = "keys.dungfactory.dropdung";
+        public static final String RAKE = "keys.dungfactory.rake";
     }
 }
