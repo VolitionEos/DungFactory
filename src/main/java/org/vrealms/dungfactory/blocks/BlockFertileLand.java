@@ -3,21 +3,26 @@ package org.vrealms.dungfactory.blocks;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockBush;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.EnumPlantType;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.ForgeDirection;
 import org.vrealms.dungfactory.init.ModBlocks;
 import org.vrealms.dungfactory.utility.LogHelper;
 
 import java.util.Random;
+
+import static net.minecraftforge.common.util.ForgeDirection.UP;
 
 public class BlockFertileLand extends BlockDungFactory
 {
@@ -185,10 +190,99 @@ public class BlockFertileLand extends BlockDungFactory
         return side == 1 ? (meta > 0 ? this.Top_Wet : this.Top_Dry) : ModBlocks.fertiledirt.getBlockTextureFromSide(side);
     }
 
+    /*
     @SideOnly(Side.CLIENT)
     public IIcon getBlockTexture(IBlockAccess par1IBlockAccess, int par2, int par3, int par4, int par5)
     {
         int meta = par1IBlockAccess.getBlockMetadata(par2, par3, par4);
         return par5 == 1 ? this.Top_Wet : (par5 == 0 ? this.Top_Wet : (par5 != meta ? this.Top_Wet : this.Top_Dry));
     }
+    */
+
+    /**
+     * Determines if this block can support the passed in plant, allowing it to be planted and grow.
+     * @param world The current world
+     * @param x X Position
+     * @param y Y Position
+     * @param z Z position
+     * @param direction The direction relative to the given position the plant wants to be, typically its UP
+     * @param plantable The plant that wants to check
+     * @return True to allow the plant to be planted/stay.
+     */
+    @Override
+    public boolean canSustainPlant(IBlockAccess world, int x, int y, int z, ForgeDirection direction, IPlantable plantable)
+    {
+        Block plant = plantable.getPlant(world, x, y + 1, z);
+        EnumPlantType plantType = plantable.getPlantType(world, x, y + 1, z);
+
+        if (plant == Blocks.reeds && this == ModBlocks.fertileland)
+        {
+            return false;
+        }
+
+        switch (plantType)
+        {
+            case Crop:   return this == ModBlocks.fertileland;
+            case Plains: return this == ModBlocks.fertileland;
+            case Water:  return world.getBlock(x, y, z).getMaterial() == Material.water && world.getBlockMetadata(x, y, z) == 0;
+            case Beach:
+                boolean isBeach = this == ModBlocks.fertileland;
+                boolean hasWater = (world.getBlock(x - 1, y, z    ).getMaterial() == Material.water ||
+                        world.getBlock(x + 1, y, z    ).getMaterial() == Material.water ||
+                        world.getBlock(x,     y, z - 1).getMaterial() == Material.water ||
+                        world.getBlock(x,     y, z + 1).getMaterial() == Material.water);
+                return isBeach && hasWater;
+        }
+
+        return false;
+    }
+
+    /**
+     * Called when a plant grows on this block, only implemented for saplings using the WorldGen*Trees classes right now.
+     * Modder may implement this for custom plants.
+     * This does not use ForgeDirection, because large/huge trees can be located in non-representable direction,
+     * so the source location is specified.
+     * Currently this just changes the block to dirt if it was grass.
+     *
+     * Note: This happens DURING the generation, the generation may not be complete when this is called.
+     *
+     * @param world Current world
+     * @param x Soil X
+     * @param y Soil Y
+     * @param z Soil Z
+     * @param sourceX Plant growth location X
+     * @param sourceY Plant growth location Y
+     * @param sourceZ Plant growth location Z
+     */
+    @Override
+    public void onPlantGrow(World world, int x, int y, int z, int sourceX, int sourceY, int sourceZ)
+    {
+        if (this == ModBlocks.fertileland)
+        {
+            world.setBlock(x, y, z, ModBlocks.fertiledirt, 0, 2);
+        }
+    }
+
+    /**
+     * Checks if this soil is fertile, typically this means that growth rates
+     * of plants on this soil will be slightly sped up.
+     * Only vanilla case is tilledField when it is within range of water.
+     *
+     * @param world The current world
+     * @param x X Position
+     * @param y Y Position
+     * @param z Z position
+     * @return True if the soil should be considered fertile.
+     */
+    @Override
+    public boolean isFertile(World world, int x, int y, int z)
+    {
+        if (this == ModBlocks.fertileland)
+        {
+            return world.getBlockMetadata(x, y, z) > 0;
+        }
+
+        return false;
+    }
+
 }
