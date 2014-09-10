@@ -3,6 +3,8 @@ package org.vrealms.dungfactory.blocks;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockReed;
+import net.minecraft.block.BlockStem;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Blocks;
@@ -15,18 +17,47 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.vrealms.dungfactory.creativetab.CreativeTabDungFactory;
 import org.vrealms.dungfactory.init.ModBlocks;
 import org.vrealms.dungfactory.utility.LogHelper;
+import org.vrealms.dungfactory.utility.StableRandom;
+
+import java.util.Random;
 
 public class BlockFertileDirt extends BlockDungFactory
 {
     @SideOnly(Side.CLIENT)
     private IIcon blockTop;
+    private StableRandom rnd;
 
     public BlockFertileDirt()
     {
         super(Material.ground);
         this.setBlockName("fertiledirt");
+        this.setTickRandomly(true);
         this.setHardness(0.5F);
         this.setCreativeTab(CreativeTabDungFactory.DUNGFACTORY_TAB);
+        this.rnd = new StableRandom();
+    }
+
+    /**
+     * Ticks the block if it's been scheduled
+     */
+    public void updateTick(World world, int x, int y, int z, Random random)
+    {
+        // Grow it faster -----Bellow here-----
+        if (!world.blockExists(x, y + 1, z))
+            return;
+
+        Block plant_block = world.getBlock(x, y + 1, z);
+
+        if (plant_block instanceof BlockReed)
+        {
+            for (int l = 1; world.blockExists(x, y + l, z) && l < 5; l++)
+            {
+                world.getBlock(x, y + l, z).updateTick(world, x, y + l, z, this.rnd);
+            }
+        } else if (plant_block instanceof IPlantable)
+        {
+            plant_block.updateTick(world, x, y + 1, z, this.rnd);
+        }
     }
 
     @Override

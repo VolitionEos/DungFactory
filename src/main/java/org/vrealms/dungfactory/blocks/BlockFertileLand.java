@@ -2,8 +2,7 @@ package org.vrealms.dungfactory.blocks;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockBush;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
@@ -19,6 +18,8 @@ import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.ForgeDirection;
 import org.vrealms.dungfactory.init.ModBlocks;
 import org.vrealms.dungfactory.utility.LogHelper;
+import org.vrealms.dungfactory.utility.StableRandom;
+import org.vrealms.dungfactory.utility.StemRandom;
 
 import java.util.Random;
 
@@ -30,6 +31,8 @@ public class BlockFertileLand extends BlockDungFactory
     private IIcon Top_Wet;
     @SideOnly(Side.CLIENT)
     private IIcon Top_Dry;
+    private StemRandom s_rnd;
+    private StableRandom rnd;
 
     public BlockFertileLand()
     {
@@ -39,6 +42,8 @@ public class BlockFertileLand extends BlockDungFactory
         this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.9375F, 1.0F);
         this.setHardness(0.5F);
         this.setLightOpacity(255);
+        this.s_rnd = new StemRandom();
+        this.rnd = new StableRandom();
     }
 
     /**
@@ -70,24 +75,43 @@ public class BlockFertileLand extends BlockDungFactory
     /**
      * Ticks the block if it's been scheduled
      */
-    public void updateTick(World p_149674_1_, int p_149674_2_, int p_149674_3_, int p_149674_4_, Random p_149674_5_)
+    public void updateTick(World world, int x, int y, int z, Random random)
     {
-        if (!this.func_149821_m(p_149674_1_, p_149674_2_, p_149674_3_, p_149674_4_) && !p_149674_1_.canLightningStrikeAt(p_149674_2_, p_149674_3_ + 1, p_149674_4_))
+        if (!this.func_149821_m(world, x, y, z) && !world.canLightningStrikeAt(x, y + 1, z))
         {
-            int l = p_149674_1_.getBlockMetadata(p_149674_2_, p_149674_3_, p_149674_4_);
+            int l = world.getBlockMetadata(x, y, z);
 
             if (l > 0)
             {
-                p_149674_1_.setBlockMetadataWithNotify(p_149674_2_, p_149674_3_, p_149674_4_, l - 1, 2);
+                world.setBlockMetadataWithNotify(x, y, z, l - 1, 2);
             }
-            else if (!this.func_149822_e(p_149674_1_, p_149674_2_, p_149674_3_, p_149674_4_))
+            else if (!this.func_149822_e(world, x, y, z))
             {
-                p_149674_1_.setBlock(p_149674_2_, p_149674_3_, p_149674_4_, ModBlocks.fertiledirt);
+                world.setBlock(x, y, z, ModBlocks.fertiledirt);
             }
         }
         else
         {
-            p_149674_1_.setBlockMetadataWithNotify(p_149674_2_, p_149674_3_, p_149674_4_, 7, 2);
+            world.setBlockMetadataWithNotify(x, y, z, 7, 2);
+        }
+
+        // Grow it faster -----Bellow here-----
+        if (!world.blockExists(x, y + 1, z))
+            return;
+
+        Block plant_block = world.getBlock(x, y + 1, z);
+
+        if (plant_block instanceof BlockStem)
+        {
+            // Mellon's need randomising of the grown block's placement
+            if (world.getBlockMetadata(x, y + 1, z) >= 7)
+                plant_block.updateTick(world, x, y + 1, z, this.s_rnd);
+            else
+                plant_block.updateTick(world, x, y + 1, z, this.rnd);
+        }
+        else if (plant_block instanceof IPlantable)
+        {
+            plant_block.updateTick(world, x, y + 1, z, this.rnd);
         }
     }
 
